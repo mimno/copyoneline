@@ -38,10 +38,14 @@
   <h1>PDF Text Cleaner</h1>
   <p>Paste PDF text below. Line breaks are removed automatically and the result is copied to your clipboard.</p>
   <textarea id="input" placeholder="Paste PDF text here..."></textarea>
+  <label style="font-size:0.9rem; color:#555; display:inline-flex; align-items:center; gap:6px; margin-top:8px;">
+    <input type="checkbox" id="quotes"> Wrap in angled quotes <span style="color:#333">«  »</span>
+  </label>
   <div id="status"></div>
 
   <script>
     const input = document.getElementById('input');
+    const quotes = document.getElementById('quotes');
     const status = document.getElementById('status');
 
     input.addEventListener('input', processAndCopy);
@@ -58,10 +62,12 @@
         .replace(/ {2,}/g, ' ')        // collapse multiple spaces
         .trim();
 
-      navigator.clipboard.writeText(cleaned).then(() => {
+      const output = quotes.checked ? `«${cleaned}»` : cleaned;
+
+      navigator.clipboard.writeText(output).then(() => {
         input.value = '';
         status.className = '';
-        const preview = cleaned.length > 30 ? cleaned.slice(0, 30) + '…' : cleaned;
+        const preview = output.length > 30 ? output.slice(0, 30) + '…' : output;
         status.textContent = `Copied: "${preview}"`;
       }).catch(() => {
         status.className = 'error';
