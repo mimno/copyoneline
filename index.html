@@ -61,7 +61,8 @@
       navigator.clipboard.writeText(cleaned).then(() => {
         input.value = '';
         status.className = '';
-        status.textContent = 'Copied to clipboard!';
+        const preview = cleaned.length > 30 ? cleaned.slice(0, 30) + '…' : cleaned;
+        status.textContent = `Copied: "${preview}"`;
       }).catch(() => {
         status.className = 'error';
         status.textContent = 'Could not copy automatically — select and copy the text above manually.';
