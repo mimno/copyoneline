@@ -8,4 +8,6 @@ Paste text into the box. It will:
 - Delete non-breaking spaces (a common PDF artifact)
 - Copy the cleaned text to your clipboard automatically
 
+Optionally wrap the result in quotes: none (default), "straight", "curly", 'single', or «angle».
+
 Try it: https://mimno.github.io/copyoneline/
