@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Text Cleaner</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #f5f5f5;
+    }
+    h1 { font-size: 1.3rem; color: #333; }
+    p { color: #555; font-size: 0.9rem; }
+    textarea {
+      width: 100%;
+      height: 220px;
+      font-size: 0.95rem;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      resize: vertical;
+      background: #fff;
+    }
+    #status {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #27ae60;
+      min-height: 1.2em;
+    }
+    #status.error { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <h1>PDF Text Cleaner</h1>
+  <p>Paste PDF text below. Line breaks are removed automatically and the result is copied to your clipboard.</p>
+  <textarea id="input" placeholder="Paste PDF text here..."></textarea>
+  <div id="status"></div>
+
+  <script>
+    const input = document.getElementById('input');
+    const status = document.getElementById('status');
+
+    input.addEventListener('input', processAndCopy);
+
+    function processAndCopy() {
+      const raw = input.value;
+      if (!raw) { status.textContent = ''; return; }
+
+      // Join hyphenated line-breaks (word- + newline → word), then replace remaining newlines with spaces
+      const cleaned = raw
+        .replace(/\u00a0/g, '')        // non-breaking spaces → delete
+        .replace(/-\r?\n/g, '-')       // hyphen at end of line: keep hyphen, no space
+        .replace(/\r?\n/g, ' ')        // remaining newlines → space
+        .replace(/ {2,}/g, ' ')        // collapse multiple spaces
+        .trim();
+
+      navigator.clipboard.writeText(cleaned).then(() => {
+        input.value = '';
+        status.className = '';
+        status.textContent = 'Copied to clipboard!';
+      }).catch(() => {
+        status.className = 'error';
+        status.textContent = 'Could not copy automatically — select and copy the text above manually.';
+        input.value = cleaned;
+      });
+    }
+  </script>
+</body>
+</html>
