@@ -37,16 +37,31 @@
 <body>
   <h1>PDF Text Cleaner</h1>
   <p>Paste PDF text below. Line breaks are removed automatically and the result is copied to your clipboard.</p>
+  <div id="quote-options" style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:10px; font-size:0.9rem; color:#555;">
+    <label><input type="radio" name="quotes" value="none" checked> none</label>
+    <label><input type="radio" name="quotes" value="straight"> &quot;straight&quot;</label>
+    <label><input type="radio" name="quotes" value="curly"> &#x201C;curly&#x201D;</label>
+    <label><input type="radio" name="quotes" value="single"> &#x2018;single&#x2019;</label>
+    <label><input type="radio" name="quotes" value="angle"> «angle»</label>
+  </div>
   <textarea id="input" placeholder="Paste PDF text here..."></textarea>
-  <label style="font-size:0.9rem; color:#555; display:inline-flex; align-items:center; gap:6px; margin-top:8px;">
-    <input type="checkbox" id="quotes"> Wrap in angled quotes <span style="color:#333">«  »</span>
-  </label>
   <div id="status"></div>
 
   <script>
     const input = document.getElementById('input');
-    const quotes = document.getElementById('quotes');
     const status = document.getElementById('status');
+
+    const quotePairs = {
+      none:     ['', ''],
+      straight: ['"', '"'],
+      curly:    ['\u201C', '\u201D'],
+      single:   ['\u2018', '\u2019'],
+      angle:    ['\u00AB', '\u00BB'],
+    };
+
+    function selectedQuotes() {
+      return quotePairs[document.querySelector('input[name="quotes"]:checked').value];
+    }
 
     input.addEventListener('input', processAndCopy);
 
@@ -62,7 +77,8 @@
         .replace(/ {2,}/g, ' ')        // collapse multiple spaces
         .trim();
 
-      const output = quotes.checked ? `«${cleaned}»` : cleaned;
+      const [open, close] = selectedQuotes();
+      const output = `${open}${cleaned}${close}`;
 
       navigator.clipboard.writeText(output).then(() => {
         input.value = '';
